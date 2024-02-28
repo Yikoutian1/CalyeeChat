@@ -1,5 +1,6 @@
 package com.calyee.chat.common;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Version 1.0
  */
 @SpringBootApplication(scanBasePackages = {"com.calyee.chat"})
+@MapperScan({"com.calyee.chat.common.**.mapper"})
 public class ChatCustomApplication {
     public static void main(String[] args) {
         SpringApplication.run(ChatCustomApplication.class, args);
