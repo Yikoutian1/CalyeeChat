@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum WSReqTypeEnum {
+    // websocket枚举，除此之外大部分还是走的http请求，毕竟是网页项目
     LOGIN(1, "请求登录二维码"),
     HEARTBEAT(2, "心跳包"),
     AUTHORIZE(3, "登录认证"),

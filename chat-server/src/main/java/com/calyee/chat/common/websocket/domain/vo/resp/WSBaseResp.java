@@ -1,6 +1,8 @@
 package com.calyee.chat.common.websocket.domain.vo.resp;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @projectName: calyeechat
@@ -13,6 +15,8 @@ import lombok.Data;
  */
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class WSBaseResp<T> {
     /**
      * 请求类型
