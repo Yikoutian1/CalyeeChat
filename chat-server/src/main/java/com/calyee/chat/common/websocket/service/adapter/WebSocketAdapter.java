@@ -1,7 +1,9 @@
 package com.calyee.chat.common.websocket.service.adapter;
 
+import com.calyee.chat.common.user.domain.entity.User;
 import com.calyee.chat.common.websocket.domain.vo.enums.WSRespTypeEnum;
 import com.calyee.chat.common.websocket.domain.vo.resp.WSBaseResp;
+import com.calyee.chat.common.websocket.domain.vo.resp.WSLoginSuccess;
 import com.calyee.chat.common.websocket.domain.vo.resp.WSLoginUrl;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 
@@ -20,6 +22,25 @@ public class WebSocketAdapter {
         WSBaseResp<WSLoginUrl> resp = new WSBaseResp<>();
         resp.setType(WSRespTypeEnum.LOGIN_URL.getType());
         resp.setData(new WSLoginUrl(wxMpQrCodeTicket.getUrl()));// 返回url
+        return resp;
+    }
+
+    public static WSBaseResp<?> buildResp(User user, String token) {
+        WSBaseResp<WSLoginSuccess> resp = new WSBaseResp<>();
+        resp.setType(WSRespTypeEnum.LOGIN_SUCCESS.getType());
+        WSLoginSuccess loginSuccess = WSLoginSuccess.builder()
+                .avatar(user.getAvatar())
+                .name(user.getName())
+                .token(token)
+                .uid(user.getId())
+                .build();
+        resp.setData(loginSuccess);
+        return resp;
+    }
+
+    public static WSBaseResp<?> buildWaitAuthorizeResp() {
+        WSBaseResp<WSLoginSuccess> resp = new WSBaseResp<>();
+        resp.setType(WSRespTypeEnum.LOGIN_SCAN_SUCCESS.getType()); // 构造登录状态2
         return resp;
     }
 }

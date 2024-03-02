@@ -2,6 +2,9 @@ package com.calyee.chat.common.websocket.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
+import com.calyee.chat.common.user.dao.UserDao;
+import com.calyee.chat.common.user.domain.entity.User;
+import com.calyee.chat.common.user.service.LoginService;
 import com.calyee.chat.common.websocket.domain.dto.WSChannelExtraDTO;
 import com.calyee.chat.common.websocket.domain.vo.resp.WSBaseResp;
 import com.calyee.chat.common.websocket.service.WebSocketService;
@@ -14,6 +17,7 @@ import lombok.SneakyThrows;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -33,7 +37,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
     @Autowired
+    @Lazy
     private WxMpService wxMpService;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private LoginService loginService;
     /**
      * 管理所有在线用户的连接（登录状态/游客）
      * （此时使用WSChannelExtraDTO去代替魔法的uid是为了以后可以拓展 拓展可以存其他的）
@@ -74,7 +83,33 @@ public class WebSocketServiceImpl implements WebSocketService {
     @Override
     public void offline(Channel channel) {
         ONLINE_WEBSOCKET_MAP.remove(channel);
-        // TODO 用户下线
+        // TODO 用户下线广播
+    }
+
+    @Override
+    public void scanLoginSuccess(Integer code, Long uid) {
+        // 确认连接在机器上
+        Channel channel = WAIT_LOGIN_MAP.getIfPresent(code);
+        if (Objects.isNull(channel)) {
+            return;
+        }
+        User user = userDao.getById(uid); // 获取频道用户信息
+        // 移除code
+        WAIT_LOGIN_MAP.invalidate(code);
+        // 调用登录模块 获取token
+        String token = loginService.login(uid);
+        // 用户登录
+        sendMsg(channel,WebSocketAdapter.buildResp(user,token));
+    }
+
+    @Override
+    public void waitAuthorize(Integer code) {
+        // 通过code获取channel
+        Channel channel = WAIT_LOGIN_MAP.getIfPresent(code);
+        if (Objects.isNull(channel)) {
+            return;
+        }
+        sendMsg(channel,WebSocketAdapter.buildWaitAuthorizeResp());
     }
 
     private void sendMsg(Channel channel, WSBaseResp<?> resp) {
@@ -92,7 +127,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         do {
             code = RandomUtil.randomInt(Integer.MAX_VALUE); // 生成随机码
         } while (Objects.nonNull(WAIT_LOGIN_MAP.asMap().putIfAbsent(code, channel)));
-        // 如果channel和code映射在缓存里面没有则生成成功，即putIfAbsent返回为空则退出，设置成功
+        // 如果channel和code映射在缓存里面没有则生成成功，即putIfAbsent返回为空则退出，设置成功（碰撞后仅一个值则为期望结果）
         return code;
     }
 }

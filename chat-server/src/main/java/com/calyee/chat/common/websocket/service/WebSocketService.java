@@ -10,4 +10,8 @@ public interface WebSocketService {
     void handeLoginReq(Channel channel) throws WxErrorException;
 
     void offline(Channel channel);
+
+    void scanLoginSuccess(Integer code, Long id);
+
+    void waitAuthorize(Integer code);
 }

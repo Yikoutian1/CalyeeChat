@@ -1,5 +1,6 @@
 package com.calyee.chat.common.user.controller;
 
+import com.calyee.chat.common.user.service.WxMsgService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
@@ -11,7 +12,6 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -31,12 +31,14 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/wx/portal/public")
 public class WxPortalController {
 
-    private final WxMpService wxService;
+    private final WxMpService wxMpService;
     private final WxMpMessageRouter messageRouter;
+    private final WxMsgService wxMsgService;
+    /**
+     * 重定向链接
+     */
+    private static final String RED_URL = "https://github.com/Yikoutian1/CalyeeChat";
 
-
-    @Autowired
-    private WxMpService wxMpService;
 
     @GetMapping("/getUrl/{code}")
     public String getWxUrl(@PathVariable(value = "code") Integer code) throws WxErrorException {
@@ -59,7 +61,7 @@ public class WxPortalController {
         }
 
 
-        if (wxService.checkSignature(timestamp, nonce, signature)) {
+        if (wxMpService.checkSignature(timestamp, nonce, signature)) {
             return echostr;
         }
 
@@ -73,8 +75,10 @@ public class WxPortalController {
         WxOAuth2AccessToken accessToken = wxMpService.getOAuth2Service().getAccessToken(code);
         // 获取中文的用户信息
         WxOAuth2UserInfo userInfo = wxMpService.getOAuth2Service().getUserInfo(accessToken, "zh_CN");
-        System.out.println("userInfo = " + userInfo);
-        return null;
+        // 将用户授权的信息更新至数据库
+        wxMsgService.authorize(userInfo);
+        RedirectView view = new RedirectView(RED_URL);
+        return view;
     }
 
     @PostMapping(produces = "application/xml; charset=UTF-8")
@@ -89,7 +93,7 @@ public class WxPortalController {
                         + " timestamp=[{}], nonce=[{}], requestBody=[\n{}\n] ",
                 openid, signature, encType, msgSignature, timestamp, nonce, requestBody);
 
-        if (!wxService.checkSignature(timestamp, nonce, signature)) {
+        if (!wxMpService.checkSignature(timestamp, nonce, signature)) {
             throw new IllegalArgumentException("非法请求，可能属于伪造的请求！");
         }
 
@@ -105,7 +109,7 @@ public class WxPortalController {
             out = outMessage.toXml();
         } else if ("aes".equalsIgnoreCase(encType)) {
             // aes加密的消息
-            WxMpXmlMessage inMessage = WxMpXmlMessage.fromEncryptedXml(requestBody, wxService.getWxMpConfigStorage(),
+            WxMpXmlMessage inMessage = WxMpXmlMessage.fromEncryptedXml(requestBody, wxMpService.getWxMpConfigStorage(),
                     timestamp, nonce, msgSignature);
             log.debug("\n消息解密后内容为：\n{} ", inMessage.toString());
             WxMpXmlOutMessage outMessage = this.route(inMessage);
@@ -113,7 +117,7 @@ public class WxPortalController {
                 return "";
             }
 
-            out = outMessage.toEncryptedXml(wxService.getWxMpConfigStorage());
+            out = outMessage.toEncryptedXml(wxMpService.getWxMpConfigStorage());
         }
 
         log.debug("\n组装回复信息：{}", out);
