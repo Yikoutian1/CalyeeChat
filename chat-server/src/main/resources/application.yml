@@ -18,11 +18,17 @@ spring:
     database: 0
     # 连接超时时间
     timeout: 1800000
-    # 设置密码
-    password: ${calyeechat.redis.password}
+    # 设置密码 开发环境则打开
+#    password: ${calyeechat.redis.password}
   jackson:
     serialization:
       write-dates-as-timestamps: true
+# 日志
+logging:
+  # 日志级别
+  level:
+    org.springframework: info
+
 wx:
   mp:
     #    callback: http://f4cd-113-92-129-127.ngrok.io
@@ -32,3 +38,5 @@ wx:
         secret: ${calyeechat.wx.secret} # 公众号的appsecret
         token: ${calyeechat.wx.token} # 接口配置里的Token值
         aesKey: ${calyeechat.wx.aesKey} # 接口配置里的EncodingAESKey值
+jwt:
+  secret: ${calyeechat.jwt.secret}
