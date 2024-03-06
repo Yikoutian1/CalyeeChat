@@ -4,6 +4,7 @@ package com.calyee.chat.common.user.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Controller;
  * @author <a href="https://github.com/yikoutian1">calyeechat</a>
  * @since 2024-03-06
  */
-@Controller
+@RestController
 @RequestMapping("/itemConfig")
 public class ItemConfigController {
 
