@@ -1,5 +1,6 @@
 package com.calyee.chat.common.websocket;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
 import com.calyee.chat.common.websocket.domain.vo.enums.WSReqTypeEnum;
@@ -42,6 +43,11 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         // 如果事件是一个WebSocket握手的事件
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
+            String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);
+            // 非空才认证
+            if (StrUtil.isNotBlank(token)) {
+                webSocketService.authorize(ctx.channel(), token);
+            }
             log.info("[握手完成]");
         } else if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
@@ -77,10 +83,11 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         String text = msg.text();
-        // 反序列号 hutool工具包
+        // 反序列化 hutool工具包
         WSBaseReq baseRequest = JSONUtil.toBean(text, WSBaseReq.class);
         switch (WSReqTypeEnum.of(baseRequest.getType())) {
             case AUTHORIZE:
+                webSocketService.authorize(ctx.channel(), baseRequest.getData());
                 break;
             case HEARTBEAT:
                 break;

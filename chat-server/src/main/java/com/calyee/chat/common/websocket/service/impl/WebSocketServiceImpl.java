@@ -98,8 +98,9 @@ public class WebSocketServiceImpl implements WebSocketService {
         WAIT_LOGIN_MAP.invalidate(code);
         // 调用登录模块 获取token
         String token = loginService.login(uid);
-        // 用户登录
-        sendMsg(channel,WebSocketAdapter.buildResp(user,token));
+        // 用户登录 成功
+        loginSuccess(channel,user,token);
+//        sendMsg(channel, WebSocketAdapter.buildResp(user, token));
     }
 
     @Override
@@ -109,7 +110,34 @@ public class WebSocketServiceImpl implements WebSocketService {
         if (Objects.isNull(channel)) {
             return;
         }
-        sendMsg(channel,WebSocketAdapter.buildWaitAuthorizeResp());
+        sendMsg(channel, WebSocketAdapter.buildWaitAuthorizeResp());
+    }
+
+    /**
+     * 认证
+     *
+     * @param channel 频道
+     * @param token   token
+     */
+    @Override
+    public void authorize(Channel channel, String token) {
+        Long loginUid = loginService.getValidUid(token);
+        if (Objects.nonNull(loginUid)) {
+            // 如果用户是存在的，存储了token则直接拿本地的token去做操作
+            User user = userDao.getById(loginUid);
+            loginSuccess(channel,user,token);
+        } else {// 如果不存在token 则通知前端需要登录即可
+            sendMsg(channel, WebSocketAdapter.buildAuthorizeResp()); // token失效则会返回6
+        }
+    }
+
+    private void loginSuccess(Channel channel, User user, String token) {
+        // 保存channel的对应uid
+        WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WEBSOCKET_MAP.get(channel);
+        wsChannelExtraDTO.setUid(user.getId());
+        // TODO 用户上线成功的事件
+        // 推送成功消息
+        sendMsg(channel, WebSocketAdapter.buildResp(user, token));
     }
 
     private void sendMsg(Channel channel, WSBaseResp<?> resp) {
@@ -119,7 +147,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     /**
      * 生成登录码
      *
-     * @param channel
+     * @param channel 频道
      * @return
      */
     private Integer generateLoginCode(Channel channel) {

@@ -43,4 +43,10 @@ public class WebSocketAdapter {
         resp.setType(WSRespTypeEnum.LOGIN_SCAN_SUCCESS.getType()); // 构造登录状态2
         return resp;
     }
+
+    public static WSBaseResp<?> buildAuthorizeResp() {
+        WSBaseResp<WSLoginSuccess> resp = new WSBaseResp<>();
+        resp.setType(WSRespTypeEnum.INVALIDATE_TOKEN.getType()); // token生效
+        return resp;
+    }
 }
