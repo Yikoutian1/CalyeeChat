@@ -58,7 +58,7 @@ public class DaoTest {
     @Test
     public void baseRedis() {
         RedisUtils.set("name", "卷心菜");
-        String name = RedisUtils.get("name");
+        String name = RedisUtils.getStr("name");
         System.out.println(name); //卷心菜
         RedisUtils.del("name");
     }
