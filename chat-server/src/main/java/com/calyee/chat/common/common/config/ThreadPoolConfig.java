@@ -1,5 +1,6 @@
 package com.calyee.chat.common.common.config;
 
+import com.calyee.chat.common.common.thread.MyThreadFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -7,6 +8,7 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.LinkedList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -31,12 +33,13 @@ public class ThreadPoolConfig implements AsyncConfigurer {
     @Primary
     public ThreadPoolTaskExecutor calyeechatExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-//        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(200);
         executor.setThreadNamePrefix("calyeechat-executor-"); // 线程前缀
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());//满了调用线程执行，认为重要任务
+        executor.setThreadFactory(new MyThreadFactory(executor));// 设置线程工厂
         executor.initialize();
         return executor;
     }
