@@ -1,12 +1,16 @@
 package com.calyee.chat.common.user.controller;
 
 
+import com.calyee.chat.common.common.domain.dto.RequestUserInfo;
+import com.calyee.chat.common.common.domain.vo.resp.ApiResult;
+import com.calyee.chat.common.common.utils.RequestHolder;
+import com.calyee.chat.common.user.dao.UserDao;
 import com.calyee.chat.common.user.domain.vo.resp.UserInfoResp;
-import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -19,11 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/capi/user")  // capi：c端api接口
-@ApiModel(value="用户模块接口", description="用户模块接口")
+@Api(tags = "用户模块接口")
 public class UserController {
+    @Autowired
+    private UserDao userDao;
+
     @GetMapping("/userInfo")
     @ApiOperation(value = "获取个人信息")
-    public UserInfoResp getUserInfo(@RequestParam(value = "uid") Long uid) {
+    public ApiResult<UserInfoResp> getUserInfo() {
+        RequestUserInfo uid = RequestHolder.get();
         return null;
     }
 }
