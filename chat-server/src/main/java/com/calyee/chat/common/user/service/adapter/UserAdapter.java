@@ -1,6 +1,7 @@
 package com.calyee.chat.common.user.service.adapter;
 
 import com.calyee.chat.common.user.domain.entity.User;
+import com.calyee.chat.common.user.domain.vo.resp.UserInfoResp;
 import lombok.Data;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 
@@ -38,4 +39,13 @@ public class UserAdapter {
 
     }
 
+    public static UserInfoResp buildUserInfo(User user, Integer modifyNameCardCount) {
+        UserInfoResp vo = new UserInfoResp();
+        vo.setId(user.getId());
+        vo.setAvatar(user.getAvatar());
+        vo.setSex(user.getSex());
+        vo.setName(user.getName());
+        vo.setModifyNameChance(modifyNameCardCount);
+        return vo;
+    }
 }

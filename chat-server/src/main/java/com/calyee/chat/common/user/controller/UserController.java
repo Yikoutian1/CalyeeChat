@@ -4,14 +4,14 @@ package com.calyee.chat.common.user.controller;
 import com.calyee.chat.common.common.domain.dto.RequestUserInfo;
 import com.calyee.chat.common.common.domain.vo.resp.ApiResult;
 import com.calyee.chat.common.common.utils.RequestHolder;
-import com.calyee.chat.common.user.dao.UserDao;
+import com.calyee.chat.common.user.domain.vo.req.ModifyNameReq;
 import com.calyee.chat.common.user.domain.vo.resp.UserInfoResp;
+import com.calyee.chat.common.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -26,13 +26,20 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "用户模块接口")
 public class UserController {
     @Autowired
-    private UserDao userDao;
+    private UserService userService;
 
     @GetMapping("/userInfo")
     @ApiOperation(value = "获取个人信息")
     public ApiResult<UserInfoResp> getUserInfo() {
-        RequestUserInfo uid = RequestHolder.get();
-        return null;
+        RequestUserInfo userInfo = RequestHolder.get(); // 在ThreadLocal中获取
+        return ApiResult.success(userService.getUserInfo(userInfo.getUid()));
+    }
+
+    @PutMapping("/name")
+    @ApiOperation(value = "修改用户名")
+    public ApiResult<Void> modifyName(@Validated @RequestBody ModifyNameReq modifyNameReq) {
+        userService.modifyName(RequestHolder.get().getUid(), modifyNameReq.getName());
+        return ApiResult.success();
     }
 }
 

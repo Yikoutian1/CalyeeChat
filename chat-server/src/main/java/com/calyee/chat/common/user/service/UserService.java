@@ -1,6 +1,7 @@
 package com.calyee.chat.common.user.service;
 
 import com.calyee.chat.common.user.domain.entity.User;
+import com.calyee.chat.common.user.domain.vo.resp.UserInfoResp;
 
 /**
  * <p>
@@ -13,4 +14,8 @@ import com.calyee.chat.common.user.domain.entity.User;
 public interface UserService {
 
     Long register(User insert);
+
+    UserInfoResp getUserInfo(Long uid);
+
+    void modifyName(Long uid, String name);
 }

@@ -21,4 +21,8 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
                 .eq(openId != null, User::getOpenId, openId)
                 .one();
     }
+
+    public User getByName(String name) {
+        return lambdaQuery().eq(User::getName, name).one();
+    }
 }

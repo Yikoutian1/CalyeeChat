@@ -17,6 +17,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -29,8 +30,9 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @version: 1.0
  */
 @Slf4j
-@SpringBootTest
+@SpringBootTest(classes = ChatCustomApplication.class)
 @RunWith(SpringRunner.class) // 注入依赖环境
+@ActiveProfiles(value = "prod")
 public class DaoTest {
 
     @Autowired
@@ -44,6 +46,19 @@ public class DaoTest {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private LoginService loginService;
+
+    /**
+     * 登录获取token
+     */
+    @Test
+    public void UserLogin() {
+        String token = loginService.login(11005L);
+        // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjExMDA1LCJjcmVhdGVUaW1lIjoxNzEwMDc2NjkzfQ.lsYJ-63HkThrvu-Yaj_tSBypnH5DgalUtxTUGRDACr4
+        System.out.println(token);
+    }
 
     @Test
     public void testJWT() {
@@ -88,8 +103,6 @@ public class DaoTest {
         });
     }
 
-    @Autowired
-    private LoginService loginService;
 
     @Test
     public void redis() {
