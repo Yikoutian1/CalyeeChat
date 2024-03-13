@@ -4,6 +4,9 @@ import com.calyee.chat.common.common.utils.JwtUtils;
 import com.calyee.chat.common.common.utils.RedisUtils;
 import com.calyee.chat.common.user.dao.UserDao;
 import com.calyee.chat.common.user.domain.entity.User;
+import com.calyee.chat.common.user.domain.enums.IdempotentEnum;
+import com.calyee.chat.common.user.domain.enums.ItemEnum;
+import com.calyee.chat.common.user.service.IUserBackpackService;
 import com.calyee.chat.common.user.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -35,6 +38,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ActiveProfiles(value = "prod")
 public class DaoTest {
 
+    public static final long UID = 11005L;
     @Autowired
     private UserDao userDao;
 
@@ -87,6 +91,17 @@ public class DaoTest {
         lock.lock();
         System.out.println();
         lock.unlock();
+    }
+
+    @Autowired
+    private IUserBackpackService userBackpackService;
+
+    /**
+     * 幂等的发放
+     */
+    @Test
+    public void acquireItem() {
+        userBackpackService.acquireItem(UID, ItemEnum.PLANET.getId(), IdempotentEnum.UID, UID + "");
     }
 
 
