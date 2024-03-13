@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
  * @projectName: calyeechat
  * @package: com.calyee.chat.common.user.domain.vo.req
  * @className: ModifyNameReq
- * @author: Caluee
+ * @author: Calyee
  * @description: 修改用户名请求vo
  * @date: 2024/03/12 012 19:53
  * @version: 1.0

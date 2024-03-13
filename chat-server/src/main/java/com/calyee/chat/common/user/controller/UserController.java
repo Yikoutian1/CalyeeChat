@@ -5,6 +5,8 @@ import com.calyee.chat.common.common.domain.dto.RequestUserInfo;
 import com.calyee.chat.common.common.domain.vo.resp.ApiResult;
 import com.calyee.chat.common.common.utils.RequestHolder;
 import com.calyee.chat.common.user.domain.vo.req.ModifyNameReq;
+import com.calyee.chat.common.user.domain.vo.req.WearingBadgeReq;
+import com.calyee.chat.common.user.domain.vo.resp.BadgesResp;
 import com.calyee.chat.common.user.domain.vo.resp.UserInfoResp;
 import com.calyee.chat.common.user.service.UserService;
 import io.swagger.annotations.Api;
@@ -12,6 +14,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -39,6 +43,19 @@ public class UserController {
     @ApiOperation(value = "修改用户名")
     public ApiResult<Void> modifyName(@Validated @RequestBody ModifyNameReq modifyNameReq) {
         userService.modifyName(RequestHolder.get().getUid(), modifyNameReq.getName());
+        return ApiResult.success();
+    }
+
+    @GetMapping("/badges")
+    @ApiOperation(value = "可选徽章列表预览")
+    public ApiResult<List<BadgesResp>> getBadges() {
+        return ApiResult.success(userService.getBadges(RequestHolder.get().getUid()));
+    }
+
+    @PutMapping("/badge")
+    @ApiOperation(value = "佩戴徽章")
+    public ApiResult<Void> wearingBadge(@Validated @RequestBody WearingBadgeReq wearingBadgeReq) {
+        userService.wearingBadge(RequestHolder.get().getUid(), wearingBadgeReq.getItemId());
         return ApiResult.success();
     }
 }

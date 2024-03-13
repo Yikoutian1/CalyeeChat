@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Throwable.class)
     public ApiResult<?> throwable(Throwable e) {
-        log.error("system exception! The reason is:{}", e.getMessage());
+        log.error("system exception! The reason is:{}", e.getMessage(), e);
         return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR);
     }
 }
