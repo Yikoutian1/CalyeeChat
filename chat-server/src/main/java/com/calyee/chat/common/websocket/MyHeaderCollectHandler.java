@@ -30,6 +30,7 @@ public class MyHeaderCollectHandler extends ChannelInboundHandlerAdapter {
             // 如果token存在
             tokenOptional.ifPresent(s -> NettyUtil.setAttr(ctx.channel(), NettyUtil.TOKEN, s));
             request.setUri(urlBuilder.getPath().toString());
+            // 获取用户IP
         }
         ctx.fireChannelRead(msg);
     }

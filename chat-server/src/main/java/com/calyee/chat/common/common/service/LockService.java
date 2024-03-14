@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 /**
  * @className: LockService
@@ -52,5 +51,15 @@ public class LockService {
             runnable.run();
             return null;
         });
+    }
+
+    @FunctionalInterface
+    public interface Supplier<T> {
+        /**
+         * Gets a result
+         *
+         * @return 啊 result
+         */
+        T get() throws Throwable;
     }
 }

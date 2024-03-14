@@ -1,5 +1,6 @@
 package com.calyee.chat.common.user.service.impl;
 
+import com.calyee.chat.common.common.event.UserRegisterEvent;
 import com.calyee.chat.common.common.utils.AssertUtil;
 import com.calyee.chat.common.user.dao.ItemConfigDao;
 import com.calyee.chat.common.user.dao.UserBackpackDao;
@@ -15,6 +16,7 @@ import com.calyee.chat.common.user.service.UserService;
 import com.calyee.chat.common.user.service.adapter.UserAdapter;
 import com.calyee.chat.common.user.service.cache.ItemCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,13 +42,16 @@ public class UserServiceImpl implements UserService {
     private ItemConfigDao itemConfigDao;
     @Autowired
     private ItemCache itemCache;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
 
     @Override
     @Transactional // 保证事件和用户注册的一致性
     public Long register(User insert) {
         boolean save = userDao.save(insert);
-        // TODO 用户注册的事件  -> 谁订阅就给谁发送通知
+        // 用户注册的事件  -> 谁订阅就给谁发送通知 （1.Mq  2.ApplicationEventPublisher）
+        applicationEventPublisher.publishEvent(new UserRegisterEvent(this, insert)); // this事件订阅者，发送端
         return insert.getId();
     }
 
