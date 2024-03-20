@@ -2,9 +2,12 @@ package com.calyee.chat.common.websocket.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
+import com.calyee.chat.common.common.event.UserOnlineEvent;
 import com.calyee.chat.common.user.dao.UserDao;
+import com.calyee.chat.common.user.domain.entity.IpInfo;
 import com.calyee.chat.common.user.domain.entity.User;
 import com.calyee.chat.common.user.service.LoginService;
+import com.calyee.chat.common.websocket.NettyUtil;
 import com.calyee.chat.common.websocket.domain.dto.WSChannelExtraDTO;
 import com.calyee.chat.common.websocket.domain.vo.resp.WSBaseResp;
 import com.calyee.chat.common.websocket.service.WebSocketService;
@@ -17,10 +20,12 @@ import lombok.SneakyThrows;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,6 +48,8 @@ public class WebSocketServiceImpl implements WebSocketService {
     private UserDao userDao;
     @Autowired
     private LoginService loginService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
     /**
      * 管理所有在线用户的连接（登录状态/游客）
      * （此时使用WSChannelExtraDTO去代替魔法的uid是为了以后可以拓展 拓展可以存其他的）
@@ -99,7 +106,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 调用登录模块 获取token
         String token = loginService.login(uid);
         // 用户登录 成功
-        loginSuccess(channel,user,token);
+        loginSuccess(channel, user, token);
 //        sendMsg(channel, WebSocketAdapter.buildResp(user, token));
     }
 
@@ -125,7 +132,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         if (Objects.nonNull(loginUid)) {
             // 如果用户是存在的，存储了token则直接拿本地的token去做操作
             User user = userDao.getById(loginUid);
-            loginSuccess(channel,user,token);
+            loginSuccess(channel, user, token);
         } else {// 如果不存在token 则通知前端需要登录即可
             sendMsg(channel, WebSocketAdapter.buildAuthorizeResp()); // token失效则会返回6
         }
@@ -135,9 +142,14 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 保存channel的对应uid
         WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WEBSOCKET_MAP.get(channel);
         wsChannelExtraDTO.setUid(user.getId());
-        // TODO 用户上线成功的事件
         // 推送成功消息
         sendMsg(channel, WebSocketAdapter.buildResp(user, token));
+        // 用户上线成功的事件
+        user.setLastOptTime(new Date()); // 设置最后一次上线时间
+        IpInfo ipInfo = new IpInfo();
+        ipInfo.setUpdateIp(NettyUtil.getAttr(channel, NettyUtil.IP));
+        user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));
+        applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));
     }
 
     private void sendMsg(Channel channel, WSBaseResp<?> resp) {
