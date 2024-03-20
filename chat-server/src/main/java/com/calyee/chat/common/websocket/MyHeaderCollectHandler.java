@@ -1,10 +1,12 @@
 package com.calyee.chat.common.websocket;
 
 import cn.hutool.core.net.url.UrlBuilder;
+import io.micrometer.core.instrument.util.StringUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpRequest;
 
+import java.net.InetSocketAddress;
 import java.util.Optional;
 
 /**
@@ -31,6 +33,16 @@ public class MyHeaderCollectHandler extends ChannelInboundHandlerAdapter {
             tokenOptional.ifPresent(s -> NettyUtil.setAttr(ctx.channel(), NettyUtil.TOKEN, s));
             request.setUri(urlBuilder.getPath().toString());
             // 获取用户IP
+            String ip = request.headers().get("X-Real-IP");
+            if (StringUtils.isBlank(ip)) {
+                // 直连IP，没有经过Nginx
+                InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
+                ip = address.getAddress().getHostAddress();
+            }
+            // 保存到Channel附件
+            NettyUtil.setAttr(ctx.channel(), NettyUtil.IP, ip);
+            // 处理器只需要用一次
+            ctx.pipeline().remove(this);
         }
         ctx.fireChannelRead(msg);
     }
