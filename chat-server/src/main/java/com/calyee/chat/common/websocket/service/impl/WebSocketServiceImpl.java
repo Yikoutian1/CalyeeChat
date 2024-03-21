@@ -2,10 +2,13 @@ package com.calyee.chat.common.websocket.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
+import com.calyee.chat.common.common.config.ThreadPoolConfig;
 import com.calyee.chat.common.common.event.UserOnlineEvent;
 import com.calyee.chat.common.user.dao.UserDao;
 import com.calyee.chat.common.user.domain.entity.IpInfo;
 import com.calyee.chat.common.user.domain.entity.User;
+import com.calyee.chat.common.user.domain.enums.RoleEnum;
+import com.calyee.chat.common.user.service.IRoleService;
 import com.calyee.chat.common.user.service.LoginService;
 import com.calyee.chat.common.websocket.NettyUtil;
 import com.calyee.chat.common.websocket.domain.dto.WSChannelExtraDTO;
@@ -20,8 +23,10 @@ import lombok.SneakyThrows;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -50,6 +55,11 @@ public class WebSocketServiceImpl implements WebSocketService {
     private LoginService loginService;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private IRoleService roleService;
+    @Autowired
+    @Qualifier(ThreadPoolConfig.WS_EXECUTOR)
+    private ThreadPoolTaskExecutor executor;
     /**
      * 管理所有在线用户的连接（登录状态/游客）
      * （此时使用WSChannelExtraDTO去代替魔法的uid是为了以后可以拓展 拓展可以存其他的）
@@ -138,12 +148,21 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
+    @Override
+    public void sendMsgToAll(WSBaseResp<?> msg) {
+        ONLINE_WEBSOCKET_MAP.forEach((channel, ext) -> {
+            executor.execute(() -> {
+                sendMsg(channel, msg);
+            });
+        });
+    }
+
     private void loginSuccess(Channel channel, User user, String token) {
         // 保存channel的对应uid
         WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WEBSOCKET_MAP.get(channel);
         wsChannelExtraDTO.setUid(user.getId());
         // 推送成功消息
-        sendMsg(channel, WebSocketAdapter.buildResp(user, token));
+        sendMsg(channel, WebSocketAdapter.buildResp(user, token, roleService.hasPower(user.getId(), RoleEnum.CHAT_MANAGER)));
         // 用户上线成功的事件
         user.setLastOptTime(new Date()); // 设置最后一次上线时间
         IpInfo ipInfo = new IpInfo();

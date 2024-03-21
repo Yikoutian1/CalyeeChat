@@ -1,5 +1,6 @@
 package com.calyee.chat.common.websocket.service;
 
+import com.calyee.chat.common.websocket.domain.vo.resp.WSBaseResp;
 import io.netty.channel.Channel;
 import me.chanjar.weixin.common.error.WxErrorException;
 
@@ -16,4 +17,6 @@ public interface WebSocketService {
     void waitAuthorize(Integer code);
 
     void authorize(Channel channel, String data);
+
+    void sendMsgToAll(WSBaseResp<?> msg);
 }

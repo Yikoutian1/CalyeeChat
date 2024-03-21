@@ -1,26 +1,30 @@
 package com.calyee.chat.common.user.service.impl;
 
+import com.calyee.chat.common.common.event.UserBlackEvent;
 import com.calyee.chat.common.common.event.UserRegisterEvent;
 import com.calyee.chat.common.common.utils.AssertUtil;
+import com.calyee.chat.common.user.dao.BlackDao;
 import com.calyee.chat.common.user.dao.ItemConfigDao;
 import com.calyee.chat.common.user.dao.UserBackpackDao;
 import com.calyee.chat.common.user.dao.UserDao;
-import com.calyee.chat.common.user.domain.entity.ItemConfig;
-import com.calyee.chat.common.user.domain.entity.User;
-import com.calyee.chat.common.user.domain.entity.UserBackpack;
+import com.calyee.chat.common.user.domain.entity.*;
+import com.calyee.chat.common.user.domain.enums.BlackTypeEnum;
 import com.calyee.chat.common.user.domain.enums.ItemEnum;
 import com.calyee.chat.common.user.domain.enums.ItemTypeEnum;
+import com.calyee.chat.common.user.domain.vo.req.BlackReq;
 import com.calyee.chat.common.user.domain.vo.resp.BadgesResp;
 import com.calyee.chat.common.user.domain.vo.resp.UserInfoResp;
 import com.calyee.chat.common.user.service.UserService;
 import com.calyee.chat.common.user.service.adapter.UserAdapter;
 import com.calyee.chat.common.user.service.cache.ItemCache;
+import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +48,8 @@ public class UserServiceImpl implements UserService {
     private ItemCache itemCache;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private BlackDao blackDao;
 
 
     @Override
@@ -101,4 +107,26 @@ public class UserServiceImpl implements UserService {
         userDao.wearingBadge(uid, itemId);
     }
 
+    @Override
+    public void black(BlackReq req) {
+        Long uid = req.getUid();
+        Black user = new Black();
+        user.setType(BlackTypeEnum.UID.getType());
+        user.setTarget(uid.toString());
+        blackDao.save(user);
+        User byId = userDao.getById(uid);
+        blackIp(Optional.ofNullable(byId.getIpInfo()).map(IpInfo::getCreateIp).orElse(null));
+        blackIp(Optional.ofNullable(byId.getIpInfo()).map(IpInfo::getUpdateIp).orElse(null));
+        applicationEventPublisher.publishEvent(new UserBlackEvent(this, byId));
+    }
+
+    private void blackIp(String ip) {
+        if (StringUtils.isBlank(ip)) {
+            return;
+        }
+        Black insert = new Black();
+        insert.setType(BlackTypeEnum.IP.getType());
+        insert.setTarget(ip); // 封IP
+        blackDao.save(insert);
+    }
 }

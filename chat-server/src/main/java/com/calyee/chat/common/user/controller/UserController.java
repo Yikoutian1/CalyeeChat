@@ -3,11 +3,15 @@ package com.calyee.chat.common.user.controller;
 
 import com.calyee.chat.common.common.domain.dto.RequestUserInfo;
 import com.calyee.chat.common.common.domain.vo.resp.ApiResult;
+import com.calyee.chat.common.common.utils.AssertUtil;
 import com.calyee.chat.common.common.utils.RequestHolder;
+import com.calyee.chat.common.user.domain.enums.RoleEnum;
+import com.calyee.chat.common.user.domain.vo.req.BlackReq;
 import com.calyee.chat.common.user.domain.vo.req.ModifyNameReq;
 import com.calyee.chat.common.user.domain.vo.req.WearingBadgeReq;
 import com.calyee.chat.common.user.domain.vo.resp.BadgesResp;
 import com.calyee.chat.common.user.domain.vo.resp.UserInfoResp;
+import com.calyee.chat.common.user.service.IRoleService;
 import com.calyee.chat.common.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +35,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private IRoleService roleService;
 
     @GetMapping("/userInfo")
     @ApiOperation(value = "获取个人信息")
@@ -56,6 +62,16 @@ public class UserController {
     @ApiOperation(value = "佩戴徽章")
     public ApiResult<Void> wearingBadge(@Validated @RequestBody WearingBadgeReq wearingBadgeReq) {
         userService.wearingBadge(RequestHolder.get().getUid(), wearingBadgeReq.getItemId());
+        return ApiResult.success();
+    }
+
+    @PutMapping("/black")
+    @ApiOperation(value = "拉黑")
+    public ApiResult<Void> black(@Validated @RequestBody BlackReq req) {
+        Long uid = RequestHolder.get().getUid();
+        boolean hasPower = roleService.hasPower(uid, RoleEnum.ADMIN);
+        AssertUtil.isTrue(hasPower, "管理员权限不足");
+        userService.black(req);
         return ApiResult.success();
     }
 }

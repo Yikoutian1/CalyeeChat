@@ -1,6 +1,7 @@
 package com.calyee.chat.common.user.service;
 
 import com.calyee.chat.common.user.domain.entity.User;
+import com.calyee.chat.common.user.domain.vo.req.BlackReq;
 import com.calyee.chat.common.user.domain.vo.resp.BadgesResp;
 import com.calyee.chat.common.user.domain.vo.resp.UserInfoResp;
 
@@ -25,4 +26,6 @@ public interface UserService {
     List<BadgesResp> getBadges(Long uid);
 
     void wearingBadge(Long uid,Long itemId);
+
+    void black(BlackReq req);
 }
