@@ -46,7 +46,7 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
     public void invalidUid(Long id) {
         lambdaUpdate()
                 .eq(User::getId, id)
-                .set(User::getStatus, YesOrNoEnum.YES)
+                .set(User::getStatus, YesOrNoEnum.YES.getStatus())
                 .update();
     }
 }

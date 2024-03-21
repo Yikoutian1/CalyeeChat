@@ -124,9 +124,14 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isBlank(ip)) {
             return;
         }
-        Black insert = new Black();
-        insert.setType(BlackTypeEnum.IP.getType());
-        insert.setTarget(ip); // 封IP
-        blackDao.save(insert);
+        try {
+            Black insert = new Black();
+            insert.setType(BlackTypeEnum.IP.getType());
+            insert.setTarget(ip); // 封IP
+            blackDao.save(insert);
+        } catch (Exception e) {
+
+        }
+
     }
 }

@@ -3,6 +3,7 @@ package com.calyee.chat.common.common.event.listener;
 import com.calyee.chat.common.common.event.UserBlackEvent;
 import com.calyee.chat.common.user.dao.UserDao;
 import com.calyee.chat.common.user.domain.entity.User;
+import com.calyee.chat.common.user.service.cache.UserCache;
 import com.calyee.chat.common.websocket.service.WebSocketService;
 import com.calyee.chat.common.websocket.service.adapter.WebSocketAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class UserBlackListener {
     private WebSocketService webSocketService;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private UserCache cache;
+
     @Async
     @TransactionalEventListener(classes = UserBlackEvent.class, phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
     public void sendMsg(UserBlackEvent event) {
@@ -30,5 +34,11 @@ public class UserBlackListener {
     public void changeUserStatus(UserBlackEvent event) {
         User user = event.getUser();
         userDao.invalidUid(user.getId());
+    }
+
+    @Async
+    @TransactionalEventListener(classes = UserBlackEvent.class, phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
+    public void eviCache(UserBlackEvent event) {
+        cache.clearGetBlackMap();
     }
 }

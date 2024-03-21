@@ -22,12 +22,16 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private TokenInterceptor tokenInterceptor;
     @Autowired
     private CollectorInterceptor collectorInterceptor;
+    @Autowired
+    private BlackInterceptor blackInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns(CAPI);
         registry.addInterceptor(collectorInterceptor)
+                .addPathPatterns(CAPI);
+        registry.addInterceptor(blackInterceptor)
                 .addPathPatterns(CAPI);
     }
 }
