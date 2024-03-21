@@ -12,9 +12,11 @@ import com.calyee.chat.common.user.domain.entity.User;
 import com.calyee.chat.common.user.service.IpService;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,11 +34,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Slf4j
-public class IpServiceImpl implements IpService {
+public class IpServiceImpl implements IpService, DisposableBean {
 
     private static ExecutorService executor = new ThreadPoolExecutor(1, 1,
             0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(500), new NamedThreadFactory("refresh-ipDetail", false));
+
     @Autowired
     private UserDao userDao;
 
@@ -63,7 +66,7 @@ public class IpServiceImpl implements IpService {
         });
     }
 
-    private IpDetail tryGetIpDetailOrNullTreeTimes(String ip) {
+    private static IpDetail tryGetIpDetailOrNullTreeTimes(String ip) {
         // 只获取三次ip
         for (int i = 0; i < 3; i++) {
             IpDetail ipDetail = getIpDetailOrNull(ip);
@@ -90,5 +93,29 @@ public class IpServiceImpl implements IpService {
         } catch (Exception ignored) {
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        Date begin = new Date();
+        for (int i = 0; i < 100; i++) {
+            executor.execute(() -> {
+                // https://ip.taobao.com/outGetIpInfo?ip=172.18.83.51&accessKey=alibaba-inc
+                IpDetail ipDetail = tryGetIpDetailOrNullTreeTimes("172.18.83.51");
+                if (Objects.nonNull(ipDetail)) {
+                    Date end = new Date();
+                    System.out.println(String.format("目前耗时%dms", (end.getTime() - begin.getTime())));
+                }
+            });
+        }
+    }
+
+    @Override
+    public void destroy() throws InterruptedException {
+        executor.shutdown();
+        if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {//最多等30秒，处理不完就拉倒
+            if (log.isErrorEnabled()) {
+                log.error("Timed out while waiting for executor [{}] to terminate", executor);
+            }
+        }
     }
 }

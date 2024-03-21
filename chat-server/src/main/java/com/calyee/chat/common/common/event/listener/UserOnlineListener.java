@@ -29,7 +29,8 @@ public class UserOnlineListener {
     private IpService ipService;
 
     @Async
-    @TransactionalEventListener(classes = UserOnlineEvent.class, phase = TransactionPhase.AFTER_COMMIT) // 事务提交后
+    @TransactionalEventListener(classes = UserOnlineEvent.class, phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
+    // 如果监听前没有事务，则需要额外配置fallbackExecution：Whether the event should be handled if no transaction is running.
     public void saveDB(UserOnlineEvent userOnlineEvent) {
         User user = userOnlineEvent.getUser();
         User update = new User();

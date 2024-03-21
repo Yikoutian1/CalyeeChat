@@ -1,10 +1,12 @@
 package com.calyee.chat.common.user.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IpDetail implements Serializable {
     //注册时的ip
     private String ip;

@@ -96,5 +96,11 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
                 webSocketService.handeLoginReq(ctx.channel()); // 处理当前channel的信息
         }
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("exceptionCaught", cause);
+        super.exceptionCaught(ctx, cause);
+    }
 }
 
