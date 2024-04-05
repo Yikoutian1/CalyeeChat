@@ -45,7 +45,6 @@ public class ThreadPoolConfig implements AsyncConfigurer {
     }
 
     @Bean(WS_EXECUTOR)
-    @Primary
     public ThreadPoolTaskExecutor websocketExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setWaitForTasksToCompleteOnShutdown(true);

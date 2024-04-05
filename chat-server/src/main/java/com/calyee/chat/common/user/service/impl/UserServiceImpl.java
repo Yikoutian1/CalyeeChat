@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
         boolean success = userBackpackDao.userItem(modifyNameItem);
         if (success) {
             // 使用成功则可以改名字了
-            boolean successUpdateName = userDao.modifyName(uid, name);
+            userDao.modifyName(uid, name);
         }
     }
 

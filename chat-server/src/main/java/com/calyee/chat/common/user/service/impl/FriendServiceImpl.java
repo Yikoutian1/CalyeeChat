@@ -1,12 +1,6 @@
 package com.calyee.chat.common.user.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.calyee.chat.common.chat.dao.RoomFriendDao;
-import com.calyee.chat.common.chat.domain.entity.RoomFriend;
-import com.calyee.chat.common.chat.service.ChatService;
-import com.calyee.chat.common.chat.service.ContactService;
-import com.calyee.chat.common.chat.service.RoomService;
-import com.calyee.chat.common.chat.service.adapter.MessageAdapter;
 import com.calyee.chat.common.common.annotation.RedissonLock;
 import com.calyee.chat.common.common.domain.vo.req.CursorPageBaseReq;
 import com.calyee.chat.common.common.domain.vo.req.PageBaseReq;
@@ -39,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -61,15 +54,7 @@ public class FriendServiceImpl implements FriendService {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
-    private RoomService roomService;
-    @Autowired
-    private ContactService contactService;
-    @Autowired
-    private ChatService chatService;
-    @Autowired
     private UserDao userDao;
-    @Autowired
-    private RoomFriendDao roomFriendDao;
 
     /**
      * 检查
@@ -119,7 +104,7 @@ public class FriendServiceImpl implements FriendService {
         //申请入库
         UserApply insert = FriendAdapter.buildFriendApply(uid, request);
         userApplyDao.save(insert);
-        //申请事件
+        // TODO 申请事件
         applicationEventPublisher.publishEvent(new UserApplyEvent(this, insert));
     }
 
@@ -171,10 +156,10 @@ public class FriendServiceImpl implements FriendService {
         userApplyDao.agree(request.getApplyId());
         //创建双方好友关系
         createFriend(uid, userApply.getUid());
-        //创建一个聊天房间
-        RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, userApply.getUid()));
-        //发送一条同意消息。。我们已经是好友了，开始聊天吧
-        chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId()), uid);
+        //TODO 创建一个聊天房间
+        // RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, userApply.getUid()));
+        //TODO 发送一条同意消息。。我们已经是好友了，开始聊天吧
+        // chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId()), uid);
     }
 
     /**
@@ -193,8 +178,8 @@ public class FriendServiceImpl implements FriendService {
         }
         List<Long> friendRecordIds = userFriends.stream().map(UserFriend::getId).collect(Collectors.toList());
         userFriendDao.removeByIds(friendRecordIds);
-        //禁用房间
-        roomService.disableFriendRoom(Arrays.asList(uid, friendUid));
+        // TODO 禁用房间
+        // roomService.disableFriendRoom(Arrays.asList(uid, friendUid));
     }
 
     @Override
