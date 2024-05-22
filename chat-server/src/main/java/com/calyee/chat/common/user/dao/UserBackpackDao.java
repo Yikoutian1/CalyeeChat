@@ -1,5 +1,7 @@
 package com.calyee.chat.common.user.dao;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.calyee.chat.common.common.domain.enums.YesOrNoEnum;
 import com.calyee.chat.common.user.domain.entity.UserBackpack;
@@ -19,44 +21,60 @@ import java.util.List;
 @Service
 public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpack> {
 
-    public Integer getCountByValidItemId(Long uid, Long itemId) {
+    public boolean userItem(UserBackpack modifyNameItem) {
+        // 此锁为数据库级别的锁 每次修改都需要判断是否已经修改过才能修改
+        //数据库锁又叫逻辑锁
+        return lambdaUpdate()
+                .eq(UserBackpack::getId, modifyNameItem.getId()) // 必须是待使用的改名卡id
+                .eq(UserBackpack::getStatus, YesOrNoEnum.NO)
+                .set(UserBackpack::getStatus, YesOrNoEnum.YES)// 设置为使用
+                .update();
+    }
+    public UserBackpack getByIdempotent(String idempotent) {
         return lambdaQuery()
-                .eq(UserBackpack::getUid, uid)
+                .eq(UserBackpack::getItemId, idempotent)
+                .one();
+    }
+    public Integer getCountByValidItemId(Long uid, Long itemId) {
+        return lambdaQuery().eq(UserBackpack::getUid, uid)
                 .eq(UserBackpack::getItemId, itemId)
                 .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
                 .count();
     }
 
     public UserBackpack getFirstValidItem(Long uid, Long itemId) {
-        return lambdaQuery()
+        LambdaQueryWrapper<UserBackpack> wrapper = new QueryWrapper<UserBackpack>().lambda()
                 .eq(UserBackpack::getUid, uid)
                 .eq(UserBackpack::getItemId, itemId)
                 .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
-                .orderByAsc(UserBackpack::getId) // 获取最老的一张
-                .last("limit 1")
-                .one();
+                .last("limit 1");
+        return getOne(wrapper);
     }
 
-    public boolean userItem(UserBackpack item) {
-        // 此锁为数据库级别的锁 每次修改都需要判断是否已经修改过才能修改
-        return lambdaUpdate()
-                .eq(UserBackpack::getId, item.getId()) // 必须是待使用的改名卡id
-                .eq(UserBackpack::getStatus, YesOrNoEnum.NO)
-                .set(UserBackpack::getStatus, YesOrNoEnum.YES)// 设置为使用
-                .update();
-
+    public boolean invalidItem(Long id) {
+        UserBackpack update = new UserBackpack();
+        update.setId(id);
+        update.setStatus(YesOrNoEnum.YES.getStatus());
+        return updateById(update);
     }
 
-    public List<UserBackpack> getByItemId(Long uid, List<Long> itemIds) {
-        return lambdaQuery()
-                .eq(UserBackpack::getUid, uid)
-                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus()) // 有效的徽章
+    public List<UserBackpack> getByItemIds(Long uid, List<Long> itemIds) {
+        return lambdaQuery().eq(UserBackpack::getUid, uid)
                 .in(UserBackpack::getItemId, itemIds)
+                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
                 .list();
     }
 
-    public UserBackpack getIdempotent(String idempotent) {
-        return lambdaQuery().eq(UserBackpack::getIdempotent, idempotent)
-                .one();
+    public List<UserBackpack> getByItemIds(List<Long> uids, List<Long> itemIds) {
+        return lambdaQuery().in(UserBackpack::getUid, uids)
+                .in(UserBackpack::getItemId, itemIds)
+                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
+                .list();
     }
+
+    public UserBackpack getByIdp(String idempotent) {
+        return lambdaQuery().eq(UserBackpack::getIdempotent, idempotent).one();
+    }
+    
+
 }

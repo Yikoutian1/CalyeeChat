@@ -10,10 +10,13 @@
     </parent>
 
     <artifactId>chat-framework</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
     <packaging>pom</packaging>
     <description>基础包 请求日志打印以及基础模块等等</description>
     <modules>
         <module>chat-common-starter</module>
+        <module>chat-transaction</module>
     </modules>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

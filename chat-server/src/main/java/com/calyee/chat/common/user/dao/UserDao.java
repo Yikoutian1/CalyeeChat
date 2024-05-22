@@ -24,25 +24,22 @@ import java.util.List;
  * @since 2024-02-28
  */
 @Service
+
 public class UserDao extends ServiceImpl<UserMapper, User> {
 
-    public User getByOpenId(String openId) {
+    public User getByOpenId(String openid) {
         return lambdaQuery()
-                .eq(openId != null, User::getOpenId, openId)
+                .eq(User::getOpenId,openid)
                 .one();
+
     }
 
-    public User getByName(String name) {
-        return lambdaQuery()
-                .eq(User::getName, name)
-                .one();
+    public User getByName(String  modifyName) {
+        return lambdaQuery().eq(User::getName,modifyName).one();
     }
 
-    public boolean modifyName(Long uid, String name) {
-        return lambdaUpdate()
-                .eq(User::getId, uid)
-                .set(User::getName, name)
-                .update();
+    public boolean modifyName(Long uid, String modifyName) {
+        return lambdaUpdate().eq(User::getId,uid).set(User::getName,modifyName).update();
     }
 
     public boolean wearingBadge(Long uid, Long itemId) {
@@ -68,7 +65,6 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
                 .list();
 
     }
-
     public List<User> getFriendList(List<Long> uids) {
         return lambdaQuery()
                 .in(User::getId, uids)

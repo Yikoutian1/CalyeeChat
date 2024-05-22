@@ -12,15 +12,20 @@ import java.util.Set;
 public class RoleServiceImpl implements IRoleService {
 
     @Autowired
-    private UserCache userCache;
+    private UserCache usercache;
+
+
 
     @Override
     public boolean hasPower(Long uid, RoleEnum roleEnum) {
-        Set<Long> roleSetByUid = userCache.getRoleSetByUid(uid);
-        return isAdmin(roleSetByUid) || roleSetByUid.contains(roleEnum.getId());
+        Set<Long> roleSet = usercache.getRoleSet(uid);
+
+        return isAdmin(roleSet)||roleSet.contains(roleEnum.getId());
+
     }
 
-    private boolean isAdmin(Set<Long> roleSet) {
+
+    private boolean isAdmin(Set<Long> roleSet){
         return roleSet.contains(RoleEnum.ADMIN.getId());
     }
 }

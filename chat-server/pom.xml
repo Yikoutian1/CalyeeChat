@@ -22,6 +22,10 @@
             <artifactId>chat-common-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.calyee</groupId>
+            <artifactId>chat-transaction</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
             <exclusions>

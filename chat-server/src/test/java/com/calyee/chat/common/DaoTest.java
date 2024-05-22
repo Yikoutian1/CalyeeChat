@@ -1,10 +1,10 @@
 package com.calyee.chat.common;
 
+import com.calyee.chat.common.common.domain.enums.IdempotentEnum;
 import com.calyee.chat.common.common.utils.JwtUtils;
 import com.calyee.chat.common.common.utils.RedisUtils;
 import com.calyee.chat.common.user.dao.UserDao;
 import com.calyee.chat.common.user.domain.entity.User;
-import com.calyee.chat.common.user.domain.enums.IdempotentEnum;
 import com.calyee.chat.common.user.domain.enums.ItemEnum;
 import com.calyee.chat.common.user.service.IUserBackpackService;
 import com.calyee.chat.common.user.service.LoginService;
@@ -91,6 +91,15 @@ public class DaoTest {
         lock.lock();
         System.out.println();
         lock.unlock();
+    }
+    @Test
+    public void test3() {
+        int a = 10;
+        Integer aa = 10;
+        System.out.println(aa.equals(a));
+        int b = 129;
+        Integer bb = 129;
+        System.out.println(bb.equals(b));
     }
 
     @Autowired

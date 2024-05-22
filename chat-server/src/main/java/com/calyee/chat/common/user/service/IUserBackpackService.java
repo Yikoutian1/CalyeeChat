@@ -1,6 +1,7 @@
 package com.calyee.chat.common.user.service;
 
-import com.calyee.chat.common.user.domain.enums.IdempotentEnum;
+
+import com.calyee.chat.common.common.domain.enums.IdempotentEnum;
 
 /**
  * <p>

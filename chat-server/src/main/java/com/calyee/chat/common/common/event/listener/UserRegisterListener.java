@@ -1,9 +1,9 @@
 package com.calyee.chat.common.common.event.listener;
 
+import com.calyee.chat.common.common.domain.enums.IdempotentEnum;
 import com.calyee.chat.common.common.event.UserRegisterEvent;
 import com.calyee.chat.common.user.dao.UserDao;
 import com.calyee.chat.common.user.domain.entity.User;
-import com.calyee.chat.common.user.domain.enums.IdempotentEnum;
 import com.calyee.chat.common.user.domain.enums.ItemEnum;
 import com.calyee.chat.common.user.service.IUserBackpackService;
 import org.springframework.beans.factory.annotation.Autowired;
