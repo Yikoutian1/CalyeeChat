@@ -20,7 +20,6 @@ import java.util.List;
  * <p>
  * 会话列表 服务实现类
  * </p>
- *
  */
 @Service
 public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
@@ -79,7 +78,7 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
 
     public List<Contact> getByRoomIds(List<Long> roomIds, Long uid) {
         return lambdaQuery()
-                .in(roomIds!=null,Contact::getRoomId, roomIds)
+                .in(roomIds != null, Contact::getRoomId, roomIds)
                 .eq(Contact::getUid, uid)
                 .list();
     }

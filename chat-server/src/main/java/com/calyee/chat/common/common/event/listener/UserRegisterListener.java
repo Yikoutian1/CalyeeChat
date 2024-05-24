@@ -37,6 +37,10 @@ public class UserRegisterListener {
     public void sendCard(UserRegisterEvent userRegisterEvent) {
         User user = userRegisterEvent.getUser();
         userBackpackService.acquireItem(user.getId(), ItemEnum.MODIFY_NAME_CARD.getId(), IdempotentEnum.UID, user.getId().toString());
+
+        //TODO 注册成功需要写入contact表
+
+        // TODO 谁拉的就是谁的裙主  需要在group_m写入相对应的身份信息
     }
     /**
      * 发送 前10名/100名 注册的徽章

@@ -73,7 +73,7 @@ public class WxMsgServiceImpl implements WxMsgService {
         // 用户已经注册并且授权
         if (registered && authorized) {
             // 走登录成功的逻辑 通过code找到channel给channel推送消息
-            webSocketService.scanLoginSuccess(code,user.getId());
+            webSocketService.scanLoginSuccess(code, user.getId());
             return null;
         }
         // 用户未注册,就先注册
@@ -105,7 +105,7 @@ public class WxMsgServiceImpl implements WxMsgService {
         }
         // 通过code找到用户channel,进行登录
         Integer code = WAIT_AUTHORIZE_MAP.remove(openid);
-        webSocketService.scanLoginSuccess(code,user.getId());
+        webSocketService.scanLoginSuccess(code, user.getId());
     }
 
     private void fillUserInfo(Long uid, WxOAuth2UserInfo userInfo) {

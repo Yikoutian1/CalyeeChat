@@ -7,8 +7,8 @@ import com.calyee.chat.common.common.service.LockService;
 import com.calyee.chat.common.user.dao.UserBackpackDao;
 import com.calyee.chat.common.user.domain.entity.UserBackpack;
 import com.calyee.chat.common.user.service.IUserBackpackService;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -20,12 +20,16 @@ public class UserBackpackService implements IUserBackpackService {
     @Autowired
     private UserBackpackDao userBackpackDao;
     @Autowired
+    @Lazy
+    private UserBackpackService userBackpackService;
+    @Autowired
     private LockService lockService;
 
     @Override
     public void acquireItem(Long uid, Long itemId, IdempotentEnum idempotentEum, String busineesId) {
         String idempotent = getIdempotentEum(itemId, idempotentEum, busineesId);
-        ((UserBackpackService)AopContext.currentProxy()).doAcquireItem(uid, itemId, idempotent);
+//        ((UserBackpackService)AopContext.currentProxy()).doAcquireItem(uid, itemId, idempotent);
+        userBackpackService.doAcquireItem(uid, itemId, idempotent);
     }
 
     @RedissonLock(key = "#idempotent", waitTime = 5000)//等五秒

@@ -26,13 +26,13 @@ public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpac
         //数据库锁又叫逻辑锁
         return lambdaUpdate()
                 .eq(UserBackpack::getId, modifyNameItem.getId()) // 必须是待使用的改名卡id
-                .eq(UserBackpack::getStatus, YesOrNoEnum.NO)
-                .set(UserBackpack::getStatus, YesOrNoEnum.YES)// 设置为使用
+                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
+                .set(UserBackpack::getStatus, YesOrNoEnum.YES.getStatus())// 设置为使用
                 .update();
     }
     public UserBackpack getByIdempotent(String idempotent) {
         return lambdaQuery()
-                .eq(UserBackpack::getItemId, idempotent)
+                .eq(UserBackpack::getIdempotent, idempotent)
                 .one();
     }
     public Integer getCountByValidItemId(Long uid, Long itemId) {

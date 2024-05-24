@@ -5,15 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 
-/**
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class IdReqVO {
+public class IdRespVO {
     @ApiModelProperty("id")
-    @NotNull
     private long id;
+
+    public static IdRespVO id(Long id) {
+        IdRespVO idRespVO = new IdRespVO();
+        idRespVO.setId(id);
+        return idRespVO;
+    }
 }

@@ -76,7 +76,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
      * @param channel
      */
     private void userOffline(Channel channel) {
-        webSocketService.offline(channel);
+        webSocketService.remove(channel);
         channel.close();
     }
 
@@ -93,7 +93,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
                 break;
             case LOGIN:
                 // 通过连接管道写入消息，通过TextWebSocketFrame对象写入消息
-                webSocketService.handeLoginReq(ctx.channel()); // 处理当前channel的信息
+                webSocketService.handleLoginReq(ctx.channel()); // 处理当前channel的信息
         }
     }
 
