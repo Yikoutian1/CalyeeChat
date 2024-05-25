@@ -24,7 +24,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * @date: 2024/02/28 028 20:38
  * @version: 1.0
  */
-
+@CrossOrigin
 @Slf4j
 @AllArgsConstructor
 @RestController

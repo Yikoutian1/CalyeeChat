@@ -44,3 +44,4 @@ build/
 application-prod.properties
 
 /logs/
+/chat-server/src/main/resources/application-online.properties

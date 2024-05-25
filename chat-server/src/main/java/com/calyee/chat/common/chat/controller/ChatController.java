@@ -11,7 +11,6 @@ import com.calyee.chat.common.common.domain.vo.resp.CursorPageBaseResp;
 import com.calyee.chat.common.common.utils.RequestHolder;
 import com.calyee.chat.common.user.domain.enums.BlackTypeEnum;
 import com.calyee.chat.common.user.service.cache.UserCache;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,10 @@ import java.util.Set;
  * </p>
  *
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/capi/chat")
-@Api(tags = "聊天室相关接口")
+//@Api(tags = "聊天室相关接口")
 @Slf4j
 public class ChatController {
     @Autowired
@@ -43,7 +43,7 @@ public class ChatController {
     }
 
     @GetMapping("/public/msg/page")
-    @ApiOperation("消息列表")
+//    @ApiOperation("消息列表")
 //    @FrequencyControl(time = 120, count = 20, target = FrequencyControl.Target.IP)
     public ApiResult<CursorPageBaseResp<ChatMessageResp>> getMsgPage(@Valid ChatMessagePageReq request) {
         CursorPageBaseResp<ChatMessageResp> msgPage = chatService.getMsgPage(request, RequestHolder.get().getUid());
@@ -57,7 +57,7 @@ public class ChatController {
     }
 
     @PostMapping("/msg")
-    @ApiOperation("发送消息")
+//    @ApiOperation("发送消息")
     // TODO FrequencyControl
 //    @FrequencyControl(time = 5, count = 3, target = FrequencyControl.Target.UID)
 //    @FrequencyControl(time = 30, count = 5, target = FrequencyControl.Target.UID)
@@ -69,7 +69,7 @@ public class ChatController {
     }
 
     @PutMapping("/msg/mark")
-    @ApiOperation("消息标记")
+//    @ApiOperation("消息标记")
 //    @FrequencyControl(time = 10, count = 5, target = FrequencyControl.Target.UID)
     public ApiResult<Void> setMsgMark(@Valid @RequestBody ChatMessageMarkReq request) {
         chatService.setMsgMark(RequestHolder.get().getUid(), request);
@@ -77,7 +77,7 @@ public class ChatController {
     }
 
     @PutMapping("/msg/recall")
-    @ApiOperation("撤回消息")
+//    @ApiOperation("撤回消息")
 //    @FrequencyControl(time = 20, count = 3, target = FrequencyControl.Target.UID)
     public ApiResult<Void> recallMsg(@Valid @RequestBody ChatMessageBaseReq request) {
         chatService.recallMsg(RequestHolder.get().getUid(), request);
@@ -92,14 +92,14 @@ public class ChatController {
     }
 
     @GetMapping("/msg/read")
-    @ApiOperation("获取消息的已读未读总数")
+//    @ApiOperation("获取消息的已读未读总数")
     public ApiResult<Collection<MsgReadInfoDTO>> getReadInfo(@Valid ChatMessageReadInfoReq request) {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(chatService.getMsgReadInfo(uid, request));
     }
 
     @PutMapping("/msg/read")
-    @ApiOperation("消息阅读上报")
+//    @ApiOperation("消息阅读上报")
     public ApiResult<Void> msgRead(@Valid @RequestBody ChatMessageMemberReq request) {
         Long uid = RequestHolder.get().getUid();
         chatService.msgRead(uid, request);
