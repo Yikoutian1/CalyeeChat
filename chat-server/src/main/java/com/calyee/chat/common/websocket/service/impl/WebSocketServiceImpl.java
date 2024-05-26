@@ -54,7 +54,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     @Autowired
     private LoginService loginService;
     @Autowired
-    UserDao userDao;
+    private UserDao userDao;
     @Autowired
     //引入微信service
     @Lazy//解决循环依赖
@@ -188,6 +188,13 @@ public class WebSocketServiceImpl implements WebSocketService {
         return code;
     }
 
+
+    /**
+     * 扫描成功后
+     *
+     * @param code
+     * @param uid
+     */
     @Override
     public void scanLoginSuccess(Integer code, Long uid) {
         //确认链接在机器上
@@ -206,7 +213,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     private void logSuccess(Channel channel, User user, String token) {
         //保存channel消息对应uid
-        WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WS_MAP.get(channel);//通过cahnnel获取这个用户id
+        WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WS_MAP.get(channel);//通过channel获取这个用户id
         wsChannelExtraDTO.setUid(user.getId());
 //        ONLINE_WS_MAP.put(channel,wsChannelExtraDTO);//在这里如过登录成功了会放入uid 但是这样写不行 ，因为有可能他这个channel不存在会报错 会导致系统崩溃
         WSChannelExtraDTO WSChannelExtradto = ONLINE_WS_MAP.getOrDefault(channel, new WSChannelExtraDTO());//使用concurrentHashmap的方法 如果有这个就传入 如果没有就新建一个 但是这个时候这里面还是没有值

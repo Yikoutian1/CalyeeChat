@@ -4,6 +4,7 @@ package com.calyee.chat.common.chat.service;
 import com.calyee.chat.common.chat.domain.vo.request.admin.AdminAddReq;
 import com.calyee.chat.common.chat.domain.vo.request.admin.AdminRevokeReq;
 import com.calyee.chat.common.chat.domain.vo.request.member.MemberExitReq;
+import com.calyee.chat.common.user.domain.entity.User;
 
 /**
  * <p>
@@ -37,4 +38,17 @@ public interface IGroupMemberService {
      * @param request 请求信息
      */
     void exitGroup(Long uid, MemberExitReq request);
+
+    /**
+     * 是否存在主群
+     * @param id
+     * @return true 在，false 不在
+     */
+    boolean isInGroup(Long id);
+
+    /**
+     * 加入主群
+     * @param user
+     */
+    void addMainGroup(User user);
 }

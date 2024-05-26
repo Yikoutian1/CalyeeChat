@@ -37,7 +37,7 @@ public class WxPortalController {
     /**
      * 重定向链接
      */
-    private static final String RED_URL = "https://github.com/Yikoutian1/CalyeeChat";
+    private static final String RED_URL = "http://47.121.137.17:8080/wx/portal/public/callBack";
 
 
     @GetMapping("/getUrl/{code}")

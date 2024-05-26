@@ -7,6 +7,7 @@ import com.calyee.chat.common.websocket.domain.vo.enums.WSReqTypeEnum;
 import com.calyee.chat.common.websocket.domain.vo.req.WSBaseReq;
 import com.calyee.chat.common.websocket.service.WebSocketService;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -16,6 +17,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@ChannelHandler.Sharable
 public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     private WebSocketService webSocketService;
 
@@ -32,32 +34,32 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
         webSocketService = SpringUtil.getBean(WebSocketService.class);
         // WebSocket保存
         webSocketService.connect(ctx.channel());
+        webSocketService.handleLoginReq(ctx.channel());
     }
 
-    /**
-     * @param ctx
-     * @param evt 事件类型
-     * @throws Exception
-     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        // 如果事件是一个WebSocket握手的事件
-        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);
-            // 非空才认证
-            if (StrUtil.isNotBlank(token)) {
-                webSocketService.authorize(ctx.channel(), token);
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
+            // 读空闲
+            if (idleStateEvent.state() == IdleState.READER_IDLE) {
+                // 关闭用户的连接
+                userOffLine(ctx);
             }
-            log.info("[握手完成]");
-        } else if (evt instanceof IdleStateEvent) {
-            IdleStateEvent event = (IdleStateEvent) evt;
-            if (event.state() == IdleState.READER_IDLE) {
-                log.info("[读空闲]");
-                // 1：用户主动下线
-                userOffline(ctx.channel());
+        } else if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
+            this.webSocketService.connect(ctx.channel());
+            String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);
+            if (StrUtil.isNotBlank(token)) {
+                this.webSocketService.authorize(ctx.channel(), token);
             }
         }
+        super.userEventTriggered(ctx, evt);
     }
+    private void userOffLine(ChannelHandlerContext ctx) {
+        this.webSocketService.remove(ctx.channel());
+        ctx.channel().close();
+    }
+
 
     /**
      * 2： 客户端下线

@@ -2,6 +2,7 @@ package com.calyee.chat.common.chat.service.impl;
 
 
 import com.calyee.chat.common.chat.dao.*;
+import com.calyee.chat.common.chat.domain.entity.GroupMember;
 import com.calyee.chat.common.chat.domain.entity.Room;
 import com.calyee.chat.common.chat.domain.entity.RoomGroup;
 import com.calyee.chat.common.chat.domain.vo.request.admin.AdminAddReq;
@@ -13,6 +14,8 @@ import com.calyee.chat.common.chat.service.cache.GroupMemberCache;
 import com.calyee.chat.common.common.exception.CommonErrorEnum;
 import com.calyee.chat.common.common.exception.GroupErrorEnum;
 import com.calyee.chat.common.common.utils.AssertUtil;
+import com.calyee.chat.common.user.domain.entity.User;
+import com.calyee.chat.common.user.domain.enums.GroupRoleEnum;
 import com.calyee.chat.common.user.service.impl.PushService;
 import com.calyee.chat.common.websocket.domain.vo.resp.WSBaseResp;
 import com.calyee.chat.common.websocket.domain.vo.resp.WSMemberChange;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import static com.calyee.chat.common.chat.constant.GroupConst.MAX_MANAGE_COUNT;
 
@@ -161,5 +165,23 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             pushService.sendPushMsg(ws, memberUidList);
             groupMemberCache.evictMemberUidList(room.getId());
         }
+    }
+
+    @Override
+    public boolean isInGroup(Long id) {
+        GroupMember groupMember = groupMemberDao.getById(id);
+        if(Objects.isNull(groupMember)){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void addMainGroup(User user) {
+        GroupMember groupMember = new GroupMember();
+        groupMember.setGroupId(1L);
+        groupMember.setUid(user.getId());
+        groupMember.setRole(GroupRoleEnum.MEMBER.getType());
+        groupMemberDao.save(groupMember);
     }
 }

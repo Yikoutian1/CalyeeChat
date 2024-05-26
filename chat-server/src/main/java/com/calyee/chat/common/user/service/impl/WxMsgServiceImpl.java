@@ -1,6 +1,9 @@
 package com.calyee.chat.common.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.calyee.chat.common.chat.service.IGroupMemberService;
+import com.calyee.chat.common.chat.service.cache.GroupMemberCache;
+import com.calyee.chat.common.common.utils.RandomStringUtils;
 import com.calyee.chat.common.user.dao.UserDao;
 import com.calyee.chat.common.user.domain.entity.User;
 import com.calyee.chat.common.user.service.UserService;
@@ -16,7 +19,9 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
 import java.util.Objects;
@@ -87,31 +92,50 @@ public class WxMsgServiceImpl implements WxMsgService {
         String authorizeUrl = String.format(URL,
                 wxMpService.getWxMpConfigStorage().getAppId(),
                 URLEncoder.encode(callback + "/wx/portal/public/callBack"));
+        log.info("authorizeUrl:{}", authorizeUrl);
         return TextBuilder.build("请点击登录： <a href=\"" + authorizeUrl + "\">登录</a>", wxMpXmlMessage);
     }
 
+    @Autowired
+    private GroupMemberCache groupMemberCache;
+    @Autowired
+    private IGroupMemberService groupMemberService;
+
     /**
-     * 将授权信息保存至数据库
+     * 将授权信息保存至数据库（扫描成功的回调）
      *
      * @param userInfo
      */
     @Override
+    @Transactional
     public void authorize(WxOAuth2UserInfo userInfo) {
         String openid = userInfo.getOpenid();
         User user = userDao.getByOpenId(openid);
         // 更新用户信息
         if (StrUtil.isBlank(user.getAvatar())) {
-            fillUserInfo(user.getId(), userInfo);
+            user = fillUserInfo(user.getId(), userInfo); // 全信息User对象
         }
         // 通过code找到用户channel,进行登录
         Integer code = WAIT_AUTHORIZE_MAP.remove(openid);
+        if (!groupMemberService.isInGroup(user.getId())) { // 不在主群
+            groupMemberService.addMainGroup(user); // 主群不允许退出
+            groupMemberCache.evictMemberUidList(1L); // 更新缓存
+        }
         webSocketService.scanLoginSuccess(code, user.getId());
+
     }
 
-    private void fillUserInfo(Long uid, WxOAuth2UserInfo userInfo) {
+    private User fillUserInfo(Long uid, WxOAuth2UserInfo userInfo) {
         User user = UserAdapter.buildAuthorizeUserInfo(uid, userInfo);
-        // TODO 后期可以在此处修改用户名不重复的逻辑 try-catch,主键冲突异常 DuplicateKeyException
-        userDao.updateById(user);
+        // 后期可以在此处修改用户名不重复的逻辑 try-catch,主键冲突异常 DuplicateKeyException
+        try {
+            userDao.updateById(user);
+        } catch (DuplicateKeyException e) {
+            // 随机给14位的名字
+            user.setName(RandomStringUtils.getRandomString(14));
+            userDao.updateById(user);
+        }
+        return user;
     }
 
 
