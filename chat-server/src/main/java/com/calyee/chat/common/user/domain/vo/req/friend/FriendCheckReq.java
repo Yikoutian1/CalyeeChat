@@ -1,6 +1,5 @@
 package com.calyee.chat.common.user.domain.vo.req.friend;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +21,7 @@ public class FriendCheckReq {
 
     @NotEmpty
     @Size(max = 50)
-    @ApiModelProperty("校验好友的uid")
+//    @ApiModelProperty("校验好友的uid")
     private List<Long> uidList;
 
 }

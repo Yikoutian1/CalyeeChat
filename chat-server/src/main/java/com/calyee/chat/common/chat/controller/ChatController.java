@@ -11,7 +11,6 @@ import com.calyee.chat.common.common.domain.vo.resp.CursorPageBaseResp;
 import com.calyee.chat.common.common.utils.RequestHolder;
 import com.calyee.chat.common.user.domain.enums.BlackTypeEnum;
 import com.calyee.chat.common.user.service.cache.UserCache;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -85,7 +84,7 @@ public class ChatController {
     }
 
     @GetMapping("/msg/read/page")
-    @ApiOperation("消息的已读未读列表")
+//    @ApiOperation("消息的已读未读列表")
     public ApiResult<CursorPageBaseResp<ChatMessageReadResp>> getReadPage(@Valid ChatMessageReadReq request) {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(chatService.getReadPage(uid, request));

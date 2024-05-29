@@ -18,6 +18,6 @@ import javax.validation.constraints.NotNull;
 public class ContactFriendReq {
 
     @NotNull
-    @ApiModelProperty("好友uid")
+//    @ApiModelProperty("好友uid")
     private Long uid;
 }

@@ -19,6 +19,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class ChatMessagePageReq extends CursorPageBaseReq {
     @NotNull
-    @ApiModelProperty("会话id")
+//    @ApiModelProperty("会话id")
     private Long roomId;
 }

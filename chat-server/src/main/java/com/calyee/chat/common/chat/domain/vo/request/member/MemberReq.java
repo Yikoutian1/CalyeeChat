@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberReq extends CursorPageBaseReq {
-    @ApiModelProperty("房间号")
+//    @ApiModelProperty("房间号")
     private Long roomId = 1L;
 }

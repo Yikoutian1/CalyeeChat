@@ -1,6 +1,5 @@
 package com.calyee.chat.common.chat.domain.vo.request.member;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,11 +15,11 @@ import java.util.List;
 @NoArgsConstructor
 public class MemberAddReq {
     @NotNull
-    @ApiModelProperty("房间id")
+//    @ApiModelProperty("房间id")
     private Long roomId;
 
     @NotNull
     @Size(min = 1, max = 50)
-    @ApiModelProperty("邀请的uid")
+//    @ApiModelProperty("邀请的uid")
     private List<Long> uidList;
 }

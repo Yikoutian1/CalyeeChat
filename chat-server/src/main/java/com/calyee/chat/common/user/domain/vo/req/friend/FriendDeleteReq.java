@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 public class FriendDeleteReq {
 
     @NotNull
-    @ApiModelProperty("好友uid")
+//    @ApiModelProperty("好友uid")
     private Long targetUid;
 
 }

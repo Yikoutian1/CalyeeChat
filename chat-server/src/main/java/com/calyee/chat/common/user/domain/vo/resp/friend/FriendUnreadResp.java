@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FriendUnreadResp {
 
-    @ApiModelProperty("申请列表的未读数")
+//    @ApiModelProperty("申请列表的未读数")
     private Integer unReadCount;
 
 }

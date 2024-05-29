@@ -1,6 +1,5 @@
 package com.calyee.chat.common.chat.domain.entity.msg;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,11 +22,11 @@ import java.io.Serializable;
 public class ImgMsgDTO extends BaseFileDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("宽度（像素）")
+//    @ApiModelProperty("宽度（像素）")
     @NotNull
     private Integer width;
 
-    @ApiModelProperty("高度（像素）")
+//    @ApiModelProperty("高度（像素）")
     @NotNull
     private Integer height;
 

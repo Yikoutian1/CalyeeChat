@@ -1,6 +1,5 @@
 package com.calyee.chat.common.user.domain.vo.req.friend;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +19,11 @@ import javax.validation.constraints.NotNull;
 public class FriendApplyReq {
 
     @NotBlank
-    @ApiModelProperty("申请信息")
+//    @ApiModelProperty("申请信息")
     private String msg;
 
     @NotNull
-    @ApiModelProperty("好友uid")
+//    @ApiModelProperty("好友uid")
     private Long targetUid;
 
 }

@@ -2,8 +2,6 @@ package com.calyee.chat.common.common.domain.vo.resp;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,22 +12,22 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel("基础翻页返回")
+//@ApiModel("基础翻页返回")
 public class PageBaseResp<T> {
 
-    @ApiModelProperty("当前页数")
+//    @ApiModelProperty("当前页数")
     private Integer pageNo;
 
-    @ApiModelProperty("每页查询数量")
+//    @ApiModelProperty("每页查询数量")
     private Integer pageSize;
 
-    @ApiModelProperty("总记录数")
+//    @ApiModelProperty("总记录数")
     private Long totalRecords;
 
-    @ApiModelProperty("是否最后一页")
+//    @ApiModelProperty("是否最后一页")
     private Boolean isLast = Boolean.FALSE;
 
-    @ApiModelProperty("数据列表")
+//    @ApiModelProperty("数据列表")
     private List<T> list;
 
 

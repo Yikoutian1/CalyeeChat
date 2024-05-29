@@ -23,7 +23,7 @@ import java.io.Serializable;
 public class FileMsgDTO extends BaseFileDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("文件名（带后缀）")
+//    @ApiModelProperty("文件名（带后缀）")
     @NotBlank
     private String fileName;
 

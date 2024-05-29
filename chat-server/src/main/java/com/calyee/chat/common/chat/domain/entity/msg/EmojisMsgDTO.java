@@ -21,7 +21,7 @@ import java.io.Serializable;
 public class EmojisMsgDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("下载地址")
+//    @ApiModelProperty("下载地址")
     @NotBlank
     private String url;
 }

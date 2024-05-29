@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class FriendCheckResp {
 
-    @ApiModelProperty("校验结果")
+//    @ApiModelProperty("校验结果")
     private List<FriendCheck> checkedList;
 
     @Data

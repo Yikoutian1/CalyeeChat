@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMessageReadResp {
-    @ApiModelProperty("已读或者未读的用户uid")
+//    @ApiModelProperty("已读或者未读的用户uid")
     private Long uid;
 }

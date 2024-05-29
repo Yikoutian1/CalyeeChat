@@ -17,6 +17,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class MemberExitReq {
     @NotNull
-    @ApiModelProperty("会话id")
+//    @ApiModelProperty("会话id")
     private Long roomId;
 }

@@ -1,6 +1,5 @@
 package com.calyee.chat.common.chat.domain.vo.request;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,10 +17,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class ChatMessageBaseReq {
     @NotNull
-    @ApiModelProperty("消息id")
+//    @ApiModelProperty("消息id")
     private Long msgId;
 
     @NotNull
-    @ApiModelProperty("会话id")
+//    @ApiModelProperty("会话id")
     private Long roomId;
 }

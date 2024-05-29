@@ -1,6 +1,5 @@
 package com.calyee.chat.common.chat.domain.vo.response;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,10 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMemberListResp {
-    @ApiModelProperty("uid")
+//    @ApiModelProperty("uid")
     private Long uid;
-    @ApiModelProperty("用户名称")
+//    @ApiModelProperty("用户名称")
     private String name;
-    @ApiModelProperty("头像")
+//    @ApiModelProperty("头像")
     private String avatar;
 }
