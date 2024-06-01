@@ -1,6 +1,5 @@
 package com.calyee.chat.common.chat.domain.entity.msg;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

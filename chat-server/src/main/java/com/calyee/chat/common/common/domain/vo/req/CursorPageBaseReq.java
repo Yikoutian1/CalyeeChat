@@ -21,7 +21,7 @@ public class CursorPageBaseReq {
 
 //    @ApiModelProperty("页面大小")
     @Min(0)
-    @Max(100)
+    @Max(120)
     private Integer pageSize = 10;
 
 //    @ApiModelProperty("游标（初始为null，后续请求附带上次翻页的游标）")

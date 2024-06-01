@@ -1,7 +1,7 @@
 package com.calyee.chat.common.common.interceptor;
 
-import com.calyee.chat.common.common.exception.HttpErrorEnum;
 import com.calyee.chat.common.user.service.LoginService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -22,6 +22,7 @@ import java.util.Optional;
  */
 
 @Component
+@Slf4j
 public class TokenInterceptor implements HandlerInterceptor {
 
     public static final String UID = "uid";
@@ -37,16 +38,17 @@ public class TokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = getToken(request);
+//        log.info("Req:{},Token:{},认证：{}", request.getRequestURI(), token, request.getHeader(HEADER_AUTHORIZATION));
         Long validUid = loginService.getValidUid(token);
         if (Objects.nonNull(validUid)) {// 用户有登录态
             request.setAttribute(UID, validUid); // 如果有登录 则放入附件
         } else { // 用户未登录
             boolean isPublicURI = isPublicURI(request);
-            if (!isPublicURI) { // 不是public接口
-                // 401
-                HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
-                return false;
-            }
+//            if (!isPublicURI) { // 不是public接口
+//                // 401
+//                HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
+//                return false;
+//            }
         }
         return true;
     }
@@ -60,8 +62,8 @@ public class TokenInterceptor implements HandlerInterceptor {
     private String getToken(HttpServletRequest request) {
         String header = request.getHeader(HEADER_AUTHORIZATION);
         return Optional.ofNullable(header)
-                .filter(h -> h.startsWith(AUTHORIZATION_BEARER)) // 过滤以开头为xxx的
-                .map(h -> h.replace(AUTHORIZATION_BEARER, "")) // 替换开头字符
-                .orElse(null); // 如果都不满足则 return null
+                .filter(h -> h.startsWith(AUTHORIZATION_BEARER))
+                .map(h -> h.substring(AUTHORIZATION_BEARER.length()))
+                .orElse(null);
     }
 }

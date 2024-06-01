@@ -1,7 +1,6 @@
 package com.calyee.chat.common.user.controller;
 
 import com.calyee.chat.common.user.service.WxMsgService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
@@ -12,8 +11,12 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.net.URLEncoder;
 
 /**
  * @projectName: calyeechat
@@ -24,20 +27,23 @@ import org.springframework.web.servlet.view.RedirectView;
  * @date: 2024/02/28 028 20:38
  * @version: 1.0
  */
-@CrossOrigin
 @Slf4j
-@AllArgsConstructor
+@CrossOrigin
 @RestController
 @RequestMapping("/wx/portal/public")
 public class WxPortalController {
 
-    private final WxMpService wxMpService;
-    private final WxMpMessageRouter messageRouter;
-    private final WxMsgService wxMsgService;
+    @Autowired
+    private WxMpService wxMpService;
+    @Autowired
+    private WxMpMessageRouter messageRouter;
+    @Autowired
+    private WxMsgService wxMsgService;
     /**
      * 重定向链接
      */
-    private static final String RED_URL = "http://47.121.137.17:8080/wx/portal/public/callBack";
+    @Value("${wx.mp.callback}")
+    private String callback;
 
 
     @GetMapping("/getUrl/{code}")
@@ -59,12 +65,9 @@ public class WxPortalController {
         if (StringUtils.isAnyBlank(signature, timestamp, nonce, echostr)) {
             throw new IllegalArgumentException("请求参数非法，请核实!");
         }
-
-
         if (wxMpService.checkSignature(timestamp, nonce, signature)) {
             return echostr;
         }
-
         return "非法请求";
     }
 
@@ -77,8 +80,8 @@ public class WxPortalController {
         WxOAuth2UserInfo userInfo = wxMpService.getOAuth2Service().getUserInfo(accessToken, "zh_CN");
         // 将用户授权的信息更新至数据库
         wxMsgService.authorize(userInfo);
-        RedirectView view = new RedirectView(RED_URL);
-        return view;
+        log.info("RED_URL:{}", callback + "/wx/portal/public/callBack");
+        return new RedirectView(URLEncoder.encode(callback + "/wx/portal/public/callBack"));
     }
 
     @PostMapping(produces = "application/xml; charset=UTF-8")

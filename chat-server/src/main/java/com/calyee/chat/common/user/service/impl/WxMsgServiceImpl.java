@@ -1,6 +1,7 @@
 package com.calyee.chat.common.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.calyee.chat.common.chat.service.ContactService;
 import com.calyee.chat.common.chat.service.IGroupMemberService;
 import com.calyee.chat.common.chat.service.cache.GroupMemberCache;
 import com.calyee.chat.common.common.utils.RandomStringUtils;
@@ -92,7 +93,6 @@ public class WxMsgServiceImpl implements WxMsgService {
         String authorizeUrl = String.format(URL,
                 wxMpService.getWxMpConfigStorage().getAppId(),
                 URLEncoder.encode(callback + "/wx/portal/public/callBack"));
-        log.info("authorizeUrl:{}", authorizeUrl);
         return TextBuilder.build("请点击登录： <a href=\"" + authorizeUrl + "\">登录</a>", wxMpXmlMessage);
     }
 
@@ -100,6 +100,8 @@ public class WxMsgServiceImpl implements WxMsgService {
     private GroupMemberCache groupMemberCache;
     @Autowired
     private IGroupMemberService groupMemberService;
+    @Autowired
+    private ContactService contactService;
 
     /**
      * 将授权信息保存至数据库（扫描成功的回调）
@@ -120,6 +122,8 @@ public class WxMsgServiceImpl implements WxMsgService {
         if (!groupMemberService.isInGroup(user.getId())) { // 不在主群
             groupMemberService.addMainGroup(user); // 主群不允许退出
             groupMemberCache.evictMemberUidList(1L); // 更新缓存
+            // 还需要插入到contact
+            contactService.createContact(user.getId(), 1L);// 主群
         }
         webSocketService.scanLoginSuccess(code, user.getId());
 

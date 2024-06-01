@@ -33,6 +33,9 @@ public enum HttpErrorEnum {
     public void sendHttpError(HttpServletResponse response) throws IOException {
         response.setStatus(httpCode);
         response.setContentType(ContentType.JSON.toString(StandardCharsets.UTF_8));
+        response.setHeader("Access-Control-Allow-Origin","*");
+        response.setHeader("Access-Control-Allow-Headers","*");
+        response.setHeader("Access-Control-Allow-Method", "*");
         response.getWriter().write(JsonUtils.toStr(ApiResult.fail(httpCode, desc)));
     }
 }

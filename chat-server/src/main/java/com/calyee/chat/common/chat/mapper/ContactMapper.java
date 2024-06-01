@@ -11,8 +11,6 @@ import java.util.List;
  * 会话列表 Mapper 接口
  * </p>
  *
- * @author OYBW
- * @since 2024-05-19
  */
 public interface ContactMapper extends BaseMapper<Contact> {
 

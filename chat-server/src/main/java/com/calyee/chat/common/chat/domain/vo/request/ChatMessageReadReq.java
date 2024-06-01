@@ -1,18 +1,14 @@
 package com.calyee.chat.common.chat.domain.vo.request;
 
 import com.calyee.chat.common.common.domain.vo.req.CursorPageBaseReq;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 
 /**
  * Description:
- * Author: <a href="https://github.com/zongzibinbin">abin</a>
- * Date: 2023-07-17
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @AllArgsConstructor

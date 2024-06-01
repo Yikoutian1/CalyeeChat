@@ -2,7 +2,6 @@ package com.calyee.chat.common.chat.domain.vo.request;
 
 
 import com.calyee.chat.common.common.domain.vo.req.CursorPageBaseReq;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
