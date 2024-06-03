@@ -5,6 +5,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.calyee.chat.common.chat.service.adapter.websocketAdapter;
 import com.calyee.chat.common.common.config.ThreadPoolConfig;
+import com.calyee.chat.common.common.event.UserOfflineEvent;
 import com.calyee.chat.common.common.event.UserOnlineEvent;
 import com.calyee.chat.common.user.dao.UserDao;
 import com.calyee.chat.common.user.domain.entity.IpInfo;
@@ -109,7 +110,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             User user = new User();
             user.setId(uidOptional.get());//设置userid
             user.setLastOptTime(new Date());//设置最后上下线时间
-            applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));//这个里面先保存了这个下线时间去了数据库还PUSH到了redis中去
+            applicationEventPublisher.publishEvent(new UserOfflineEvent(this, user));//这个里面先保存了这个下线时间去了数据库还PUSH到了redis中去
         }
     }
 
