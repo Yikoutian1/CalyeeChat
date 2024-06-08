@@ -50,6 +50,11 @@
         <dependencies>
             <dependency>
                 <groupId>com.calyee</groupId>
+                <artifactId>chat-oss-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.calyee</groupId>
                 <artifactId>chat-common-starter</artifactId>
                 <!--  和夫工程版本一样 -->
                 <version>${project.version}</version>

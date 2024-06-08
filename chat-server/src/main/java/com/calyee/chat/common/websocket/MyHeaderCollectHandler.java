@@ -22,26 +22,27 @@ import java.util.Optional;
 public class MyHeaderCollectHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
         if (msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
             UrlBuilder urlBuilder = UrlBuilder.ofHttp(request.getUri());
-            Optional<String> tokenOptional = Optional.of(urlBuilder)
+            Optional<String >tokenOptional = Optional.of(urlBuilder)
                     .map(UrlBuilder::getQuery)
-                    .map(k -> k.get("token"))
+                    .map(k->k.get("token"))
                     .map(CharSequence::toString);
-            // 如果token存在
+            //如果token存在
             tokenOptional.ifPresent(s -> NettyUtil.setAttr(ctx.channel(), NettyUtil.TOKEN, s));
+            //移除后面拼接的所有参数
             request.setUri(urlBuilder.getPath().toString());
-            // 获取用户IP
-            String ip = request.headers().get("X-Real-IP");
-            if (StringUtils.isBlank(ip)) {
-                // 直连IP，没有经过Nginx
-                InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
-                ip = address.getAddress().getHostAddress();
+            //取出用户IP
+            String ip = request.headers().get("X-Real-IP");//用户从nginx走就取这个
+            if(StringUtils.isBlank(ip)){//直连就是这个
+                InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+                ip = socketAddress.getAddress().getHostAddress();
             }
-            // 保存到Channel附件
-            NettyUtil.setAttr(ctx.channel(), NettyUtil.IP, ip);
-            // 处理器只需要用一次
+            //保存带channel附件
+            NettyUtil.setAttr(ctx.channel(),NettyUtil.IP,ip);
+            //处理器只需要处理一次
             ctx.pipeline().remove(this);
         }
         ctx.fireChannelRead(msg);

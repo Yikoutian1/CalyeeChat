@@ -17,6 +17,7 @@
     <modules>
         <module>chat-common-starter</module>
         <module>chat-transaction</module>
+        <module>chat-oss-starter</module>
     </modules>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

@@ -69,8 +69,6 @@ public class DaoTest {
         System.out.println(jwtUtils.createToken(1111L));
         System.out.println(jwtUtils.createToken(1111L));
     }
-
-
     /**
      * redis引入
      */

@@ -21,6 +21,10 @@
     <dependencies>
         <dependency>
             <groupId>com.calyee</groupId>
+            <artifactId>chat-oss-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.calyee</groupId>
             <artifactId>chat-common-starter</artifactId>
         </dependency>
         <dependency>
